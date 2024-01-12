@@ -23,6 +23,7 @@ class SearchWidget(QWidget):
     def initUI(self):
         # Create a QLineEdit for search input
         self.edit_search = QLineEdit(self)
+        self.edit_search.returnPressed.connect(self.searchClaims)
 
         # Create a button
         btn_search = QPushButton("Search", self)
