@@ -7,12 +7,11 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QLineEdit,
-    QMessageBox,
+    QListWidget,
+    QListWidgetItem,
 )
 
-import pathlib
 import lbrytools as lbryt
-import json
 
 
 class SearchWidget(QWidget):
@@ -29,32 +28,28 @@ class SearchWidget(QWidget):
         btn_search = QPushButton("Search", self)
         btn_search.clicked.connect(self.searchClaims)
 
+        # Create a QListWidget to display search results
+        self.list_widget = QListWidget()
+
         # Set up the layout
         layout = QVBoxLayout()
         layout.addWidget(self.edit_search)
         layout.addWidget(btn_search)
+        layout.addWidget(self.list_widget)
         self.setLayout(layout)
 
     def searchClaims(self):
-        # Get the search string from the QLineEdit
         search_text = self.edit_search.text()
-
-        # Perform LBRY search
         results = lbryt.list_search_claims(text=search_text)
-
-        # Extract the canonical_url field from the first claim (if available)
+        self.list_widget.clear()
         claims = results.get("claims", [{}])
-        parsed_claims = []
+        claims.sort(key=lambda claim: float(claim.get("amount", "0")), reverse=True)
         for claim in claims:
-            canonical_url = claim.get("canonical_url", "Not found")
-            parsed_claims.append(canonical_url)
-
-        search_results = (
-            "\n".join(parsed_claims) if parsed_claims else "No results found"
-        )
-
-        # Display the canonical_url in a QMessageBox
-        QMessageBox.information(self, "Search Results", search_results)
+            amount = float(claim.get("amount", "0"))
+            canonical_url = claim.get("canonical_url", "Canonical URL not found")
+            item_text = f"({amount:.2f}) {canonical_url}"
+            list_item = QListWidgetItem(item_text)
+            self.list_widget.addItem(list_item)
 
 
 class LBRYOfAlexandria(QMainWindow):
@@ -75,7 +70,7 @@ class LBRYOfAlexandria(QMainWindow):
         self.central_widget.setLayout(layout)
         self.setCentralWidget(self.central_widget)
 
-        self.setGeometry(350, 350, 300, 120)
+        self.setGeometry(350, 350, 400, 300)
         self.setWindowTitle("LBRY of Alexandria")
 
 
