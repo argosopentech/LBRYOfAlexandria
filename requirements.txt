@@ -1,0 +1,5 @@
+requests
+regex
+numpy
+matplotlib
+PyQt5
