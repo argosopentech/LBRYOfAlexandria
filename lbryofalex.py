@@ -3,15 +3,18 @@ from PyQt5.QtWidgets import (
     QApplication,
     QLabel,
     QMainWindow,
-    QPushButton,
     QVBoxLayout,
     QWidget,
     QLineEdit,
+    QPushButton,
+    QMessageBox,
     QListWidget,
     QListWidgetItem,
 )
 
+import pathlib
 import lbrytools as lbryt
+from lbrytools import download_single
 
 
 class LBRYOfAlexandria(QMainWindow):
@@ -22,18 +25,63 @@ class LBRYOfAlexandria(QMainWindow):
     def initUI(self):
         label = QLabel("LBRY of Alexandria", self)
 
+        # Create a SearchWidget for LBRY claims search
         self.search_widget = SearchWidget(self)
+        self.search_widget.list_widget.itemClicked.connect(
+            self.search_widget.showClaimDetails
+        )
+
+        # Create a DownloadWidget for LBRY URI download
+        self.download_widget = DownloadWidget(self)
 
         layout = QVBoxLayout()
         layout.addWidget(label)
         layout.addWidget(self.search_widget)
+        layout.addWidget(self.download_widget)
 
-        self.central_widget = QWidget(self)
-        self.central_widget.setLayout(layout)
-        self.setCentralWidget(self.central_widget)
+        central_widget = QWidget(self)
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
 
         self.setGeometry(350, 350, 800, 600)
         self.setWindowTitle("LBRY of Alexandria")
+
+
+class DownloadWidget(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.initUI()
+
+    def initUI(self):
+        label = QLabel("Download URI", self)
+
+        # Create a QLineEdit for URI input
+        self.edit_uri = QLineEdit(self)
+
+        # Create a button for download
+        btn_download = QPushButton("Download", self)
+        btn_download.clicked.connect(self.downloadURI)
+
+        # Set up the layout
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+        layout.addWidget(self.edit_uri)
+        layout.addWidget(btn_download)
+        self.setLayout(layout)
+
+    def downloadURI(self):
+        uri = self.edit_uri.text()
+        ddir = pathlib.Path.home() / "Downloads"
+        own_dir = True
+
+        try:
+            result = lbryt.download_single(uri, ddir, own_dir)
+            QMessageBox.information(
+                self, "Download Result", f"Download result: {result}"
+            )
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Error during download: {e}")
 
 
 class SearchWidget(QWidget):
