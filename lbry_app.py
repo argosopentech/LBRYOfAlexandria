@@ -1,8 +1,17 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLineEdit
+from PyQt5.QtWidgets import (
+    QApplication,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+    QLineEdit,
+)
 
 import pathlib
 import lbrytools as lbryt
+
 
 class DownloadWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -14,11 +23,11 @@ class DownloadWindow(QMainWindow):
 
     def initUI(self):
         # Create a label and a line edit for URI input
-        label_uri = QLabel('Enter URI:', self)
+        label_uri = QLabel("Enter URI:", self)
         self.edit_uri = QLineEdit(self)
 
         # Create a button for download
-        btn_download = QPushButton('Download', self)
+        btn_download = QPushButton("Download", self)
         btn_download.clicked.connect(self.downloadMedia)
 
         # Set up the layout
@@ -34,7 +43,7 @@ class DownloadWindow(QMainWindow):
 
         # Set window properties
         self.setGeometry(350, 350, 300, 120)
-        self.setWindowTitle('Download URI')
+        self.setWindowTitle("Download URI")
 
     def downloadMedia(self):
         uri = self.edit_uri.text()
@@ -49,10 +58,8 @@ class DownloadWindow(QMainWindow):
         #   - title
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     lbry_app = DownloadWindow()
     lbry_app.show()
     sys.exit(app.exec_())
-
