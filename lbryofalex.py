@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QListWidget,
     QListWidgetItem,
-    QMessageBox,
 )
 
 import lbrytools as lbryt
@@ -24,9 +23,6 @@ class LBRYOfAlexandria(QMainWindow):
         label = QLabel("LBRY of Alexandria", self)
 
         self.search_widget = SearchWidget(self)
-        self.search_widget.list_widget.itemClicked.connect(
-            self.search_widget.showClaimDetails
-        )
 
         layout = QVBoxLayout()
         layout.addWidget(label)
@@ -49,22 +45,23 @@ class SearchWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        # Create a QLineEdit for search input
         self.edit_search = QLineEdit(self)
         self.edit_search.returnPressed.connect(self.searchClaims)
 
-        # Create a button
         btn_search = QPushButton("Search", self)
         btn_search.clicked.connect(self.searchClaims)
 
-        # Create a QListWidget to display search results
-        self.list_widget = QListWidget()
+        self.list_widget = QListWidget(self)
+        self.list_widget.itemClicked.connect(self.showClaimDetails)
+
+        self.claim_details_label = QLabel("Claim Details", self)
 
         # Set up the layout
         layout = QVBoxLayout()
         layout.addWidget(self.edit_search)
         layout.addWidget(btn_search)
         layout.addWidget(self.list_widget)
+        layout.addWidget(self.claim_details_label)
         self.setLayout(layout)
 
     def searchClaims(self):
@@ -81,40 +78,17 @@ class SearchWidget(QWidget):
             item_text = f"({amount:.2f}) {canonical_url}"
             list_item = QListWidgetItem(item_text)
             list_item.setData(self.LIST_ITEM_URI_ROLE, claim["canonical_url"])
-            self.list_widget.addItem(list_item)
             list_item.setFlags(list_item.flags() | 2)  # Make item selectable
+            self.list_widget.addItem(list_item)
 
     def showClaimDetails(self, item):
         uri = item.data(self.LIST_ITEM_URI_ROLE)
         if uri:
-            print("PJDEBUG: showClaimDetails")
-            claim_details_widget = ClaimDetailsWidget(uri, parent=self.parent)
-            claim_details_widget.setWindowTitle(f"Claim Details - {uri}")
-            print("About to show claim details widget")
-            claim_details_widget.show()
-            print("Claim details widget shown")
-
-
-class ClaimDetailsWidget(QWidget):
-    def __init__(self, uri, parent=None):
-        super().__init__(parent)
-        self.parent = parent
-        self.initUI(uri)
-
-    def initUI(self, uri):
-        # Create a QLabel to display URI
-        uri_label = QLabel(f"URI: {uri}", self)
-
-        # Set up the layout
-        layout = QVBoxLayout()
-        layout.addWidget(uri_label)
-        self.setLayout(layout)
+            self.claim_details_label.setText(uri)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     lbry_app = LBRYOfAlexandria()
     lbry_app.show()
-    print("About to enter the event loop")
     sys.exit(app.exec_())
-    print("Exited the event loop")  # This line should not be reached
