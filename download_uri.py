@@ -9,7 +9,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     uri = sys.argv[1]
-    ddir = pathlib.Path.home() / "Downloads"
+    ddir = str(pathlib.Path.home() / "Downloads")
     own_dir = True
 
     d = lbryt.download_single(uri, ddir, own_dir)

@@ -72,16 +72,13 @@ class DownloadWidget(QWidget):
 
     def downloadURI(self):
         uri = self.edit_uri.text()
-        ddir = pathlib.Path.home() / "Downloads"
+        ddir = str(pathlib.Path.home() / "Documents" / "LBRYOfAlexandria")
+        pathlib.Path(ddir).mkdir(parents=True, exist_ok=True)
         own_dir = True
-
-        try:
-            result = lbryt.download_single(uri, ddir, own_dir)
-            QMessageBox.information(
-                self, "Download Result", f"Download result: {result}"
-            )
-        except Exception as e:
-            QMessageBox.warning(self, "Error", f"Error during download: {e}")
+        # Includes: download_path, channel_name, channel_claim_id, claim_name, content_fee
+        #          download_directory, download_path, metadata, title, streaming_url
+        result = lbryt.download_single(uri, ddir, own_dir)
+        QMessageBox.information(self, "Download Result", f"Download result: {result}")
 
 
 class SearchWidget(QWidget):
