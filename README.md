@@ -27,3 +27,6 @@ pip install -r requirements.txt
 ```
 python bryofalex.py
 ```
+
+## Credits
+Based on [lbrytools](https://github.com/belikor/lbrytools)
