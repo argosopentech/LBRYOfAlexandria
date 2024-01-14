@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 ##### Run
 ```
-python bryofalex.py
+python lbryofalex.py
 ```
 
 ## Credits
