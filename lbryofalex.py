@@ -118,7 +118,7 @@ class DownloadWidget(QWidget):
         #          download_directory, download_path, metadata, title, streaming_url
         result = lbryt.download_single(uri, ddir=ddir, own_dir=True)
         print(result)
-        QMessageBox.information(self, "Downloading", P2P_DISCLAIMER)
+        QMessageBox.information(self, f"Downloading to {ddir}", P2P_DISCLAIMER)
 
 
 if __name__ == "__main__":
